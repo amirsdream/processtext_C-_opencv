@@ -23,19 +23,19 @@ int main() {
     double angle = -90;
 
     // get rotation matrix for rotating the image around its center in pixel coordinates
-    cv::Point2f center((gray.cols - 1) / 2.0, (gray.rows - 1) / 2.0);
-    cv::Mat rot = cv::getRotationMatrix2D(center, angle, 1.0);
+    Point2f center((gray.cols - 1) / 2.0, (gray.rows - 1) / 2.0);
+    Mat rot = getRotationMatrix2D(center, angle, 1.0);
     // determine bounding rectangle, center not relevant
-    cv::Rect2f bbox = cv::RotatedRect(cv::Point2f(), gray.size(), angle).boundingRect2f();
+    Rect2f bbox = RotatedRect(Point2f(), gray.size(), angle).boundingRect2f();
     // adjust transformation matrix
     rot.at<double>(0, 2) += bbox.width / 2.0 - gray.cols / 2.0;
     rot.at<double>(1, 2) += bbox.height / 2.0 - gray.rows / 2.0;
-    cv::Mat dst;
-    cv::warpAffine(gray, dst, rot, bbox.size());
-    cv::addWeighted(dst, 1.5, dst, -0.5, 0, dst);
-    cv::adaptiveThreshold(dst, dst, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY, 11, 2);
-    cv::GaussianBlur(dst, dst, cv::Size(5, 5), 11);
-    cv::threshold(dst, dst, 0, 255, THRESH_BINARY + CV_THRESH_OTSU);
+    Mat dst;
+    warpAffine(gray, dst, rot, bbox.size());
+    addWeighted(dst, 1.5, dst, -0.5, 0, dst);
+    adaptiveThreshold(dst, dst, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY, 11, 2);
+    GaussianBlur(dst, dst, Size(5, 5), 11);
+    threshold(dst, dst, 0, 255, THRESH_BINARY + CV_THRESH_OTSU);
 //    imshow("Display window", dst);
 
     // Pass it to Tesseract API
